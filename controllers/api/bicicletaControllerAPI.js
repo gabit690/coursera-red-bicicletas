@@ -23,6 +23,7 @@ exports.bicicleta_update = function(req, res) {
     if (Bicicleta.allBicis[index].id == req.body.id) {
       Bicicleta.allBicis[index].color = req.body.color;
       Bicicleta.allBicis[index].modelo = req.body.modelo;
+      Bicicleta.allBicis[index].ubicacion = [req.body.lat, req.body.lng];
       break;
     }
   }

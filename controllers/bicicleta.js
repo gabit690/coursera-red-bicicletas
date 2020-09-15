@@ -16,7 +16,6 @@ exports.bicicleta_create_post = function(req, res) {
   res.redirect('/bicicletas');
 }
 
-
 exports.bicicleta_update_get = function(req, res) {
   var bici = Bicicleta.findById(req.params.id);
 
