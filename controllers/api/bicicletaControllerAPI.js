@@ -18,15 +18,11 @@ exports.bicicleta_create = function(req, res) {
 }
 
 exports.bicicleta_update = function(req, res) {
-  
-  for (let index = 0; index < Bicicleta.allBicis.length; index++) {
-    if (Bicicleta.allBicis[index].id == req.body.id) {
-      Bicicleta.allBicis[index].color = req.body.color;
-      Bicicleta.allBicis[index].modelo = req.body.modelo;
-      Bicicleta.allBicis[index].ubicacion = [req.body.lat, req.body.lng];
-      break;
-    }
-  }
+
+  let bici = Bicicleta.findById(req.body.id);
+  bici.color = req.body.color;
+  bici.modelo = req.body.modelo;
+  bici.ubicacion = [req.body.lat, req.body.lng];
 
   res.status(200).send();
 }
