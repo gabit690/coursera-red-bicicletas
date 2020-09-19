@@ -46,7 +46,6 @@ describe("Bicicleta.removeById", () => {
     var aBici1 = new Bicicleta(1, 'verde', 'urbana');
 
     Bicicleta.add(aBici1);
-
     Bicicleta.removeById(1);
 
     expect(Bicicleta.allBicis.length).toBe(0);
