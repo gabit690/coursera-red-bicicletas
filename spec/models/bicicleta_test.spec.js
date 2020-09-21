@@ -42,6 +42,7 @@ describe("Testing Bicicletas", function() {
 
   describe("Bicicleta.allBicis", () => {
     it("Comienza vacía", (done) => {
+
       Bicicleta.allBicis(function(err, bicis) {
 
         expect(bicis.length).toBe(0);
@@ -111,7 +112,7 @@ describe("Testing Bicicletas", function() {
             if (err) console.log(err);
           
             Bicicleta.removeByCode(1, function(err, result) {
-              expect(result.ok).toBe(1);
+              expect(result.n).toBe(1);
               done();
               
             });
