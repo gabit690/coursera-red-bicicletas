@@ -40,4 +40,25 @@ bicicletaSchema.statics.removeByCode = function(aCode, cb) {
   return this.deleteOne({code: aCode}, cb);
 }
 
+// bicicletaSchema.statics.updateBici = function (aBici, cb) {
+//   this.findOneAndUpdate(
+//     { code: aBici.code },
+//     {
+//       $set: {
+//         color: aBici.color,
+//         modelo: aBici.modelo,
+//         ubicacion: aBici.ubicacion,
+//       },
+//     },
+//     { new: true },
+//     function (err, result) {
+//       if (err) {
+//         return console.log("error de consulta");
+//       } else {
+//         return console.log(result);
+//       }
+//     }
+//   );
+// };
+
 module.exports = mongoose.model('Bicicleta', bicicletaSchema);

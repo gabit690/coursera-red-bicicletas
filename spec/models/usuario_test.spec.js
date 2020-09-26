@@ -43,7 +43,7 @@ describe("Testing Usuarios", function() {
       maniana.setDate(hoy.getDate() + 1);
       usuario.reservar(bicicleta.id, hoy, maniana, function(err, reserva) {
         Reserva.find({}).populate('bicicleta').populate('usuario').exec(function(err, reservas) {
-          console.log(reservas[0]);
+          // console.log(reservas[0]);
           expect(reservas.length).toBe(1);
           expect(reservas[0].diasDeReserva()).toBe(2);
           expect(reservas[0].bicicleta.code).toBe(1);

@@ -98,6 +98,11 @@ describe("Bicicleta API", () => {
           body: JSON.stringify(aBici)
         }, function(error, response, body) {
           expect(response.statusCode).toBe(200);
+          // Bicicleta.findByCode(1, (err, bicicleta) => {
+          //   if (err) console.log(err);
+          //   expect(bicicleta.code).toBe(1);
+          //   done();
+          // });
           done();
         });
 

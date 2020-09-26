@@ -13,7 +13,9 @@ exports.bicicleta_list = function(req, res) {
 exports.bicicleta_create = function(req, res) {
 
   var bici = Bicicleta.createInstance(req.body.code, req.body.color, req.body.modelo, [req.body.lat, req.body.lng]);
-
+  // bici.save(function(err){
+  //   res.status(200).json(bici);
+  // });
   Bicicleta.add(bici, function(err, newBici) {
     
       res.status(200).json({
@@ -25,10 +27,7 @@ exports.bicicleta_create = function(req, res) {
 
 exports.bicicleta_update = function(req, res) {
 
-  Bicicleta.findByCode(req.body.code, function(err, targetBici) {
-    targetBici.color = req.body.color;
-    targetBici.modelo = req.body.modelo;
-    targetBici.ubicacion = [req.body.lat, req.body.lng];
+  Bicicleta.update({code: req.body.code }, { color: req.body.color, modelo: req.body.modelo, ubicacion: [req.body.lat, req.body.lng] }, function (error, writeOpResult) {
     res.status(200).send();
   });
 
