@@ -3,8 +3,13 @@ const uniqueValidator = require('mongoose-unique-validator');
 var Reserva = require('./reserva');
 var Schema = mongoose.Schema;
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 
 const saltRounds = 10;
+
+const Token = require('../models/token');
+const mailer = require('../mailer/mailer');
+const { use } = require('../mailer/mailer');
 
 const validateEmail = function(email) {
   const re = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
@@ -41,7 +46,6 @@ var usuarioSchema = new Schema({
 usuarioSchema.plugin(uniqueValidator, { message: "el {PATH} ya existe con otro usario." });
 
 usuarioSchema.pre('save', function(next) {
-  console.log("SE EJECUTO EL PRE DEL SAVE DEL USUARIO");
   if (this.isModified('password')) {
     this.password = bcrypt.hashsync(this.password, saltRounds);
   }
@@ -54,8 +58,37 @@ usuarioSchema.methods.validPassword = function(password) {
 
 usuarioSchema.methods.reservar = function(biciId, desde, hasta, cb) {
   var reserva = new Reserva({usuario: this._id, bicicleta: biciId, desde: desde, hasta: hasta});
-  // console.log(reserva);
   reserva.save(cb);
-}
+};
+
+usuarioSchema.static.add = function(user, cb) {
+  var usario = user;
+  console.log('RECIBIDO: ', user);
+  console.log('GUARDADO: ', usuario);
+  // usario.save(cb);
+  this.create(usario, cb);
+};
+
+usuarioSchema.method.enviar_email_bienvenida = function(cb) {
+  const token = new Token({_userId: this.id, token: crypto.randomBytes(16).toString()});
+  const email_destination = this.email;
+  token.save(function(err) {
+    if (err) {return console.log(err.message);}
+
+    const mailOptions = {
+      from: 'no-reply@red-bicicletas.com',
+      to: email_destination,
+      subject: 'Verificación de cuenta',
+      text: 'Hola,\n\n' + 'Por favor, para verificar su cuenta haga click en este link: \n' + 'http://localhost:5000' + '\/token/confirmation\/' + token.token + '.\n'
+    };
+
+    mailer.sendMail(mailOptions, function(err) {
+      if (err) {return console.log(err.message);}
+
+      console.log('Se ha enviado un email de bienvenida a: ' + email_destination + '.');
+    });
+
+  });
+};
 
 module.exports = mongoose.model('Usuario', usuarioSchema);
