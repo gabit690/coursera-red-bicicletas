@@ -132,7 +132,7 @@ app.use('/users', usersRouter);
 
 app.use('/api/auth', authAPIRouter);
 app.use('/bicicletas', loggedIn, bicicletasRouter);
-app.use('/api/bicicletas', bicicletasAPIRouter);
+app.use('/api/bicicletas', validarUsuario, bicicletasAPIRouter);
 app.use('/api/usuarios', usuariosAPIRouter);
 // app.use('/api/reservas', reservasApiRouter);
 app.use('/usuarios', usuarioRouter);
