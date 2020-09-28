@@ -47,7 +47,7 @@ usuarioSchema.plugin(uniqueValidator, { message: "el {PATH} ya existe con otro u
 
 usuarioSchema.pre('save', function(next) {
   if (this.isModified('password')) {
-    this.password = bcrypt.hashsync(this.password, saltRounds);
+    this.password = bcrypt.hashSync(this.password, saltRounds);
   }
   next();
 });
@@ -61,25 +61,20 @@ usuarioSchema.methods.reservar = function(biciId, desde, hasta, cb) {
   reserva.save(cb);
 };
 
-usuarioSchema.static.add = function(user, cb) {
-  var usario = user;
-  console.log('RECIBIDO: ', user);
-  console.log('GUARDADO: ', usuario);
-  // usario.save(cb);
-  this.create(usario, cb);
+usuarioSchema.statics.add = function(user, cb) {
+  this.create(user, cb);
 };
 
-usuarioSchema.method.enviar_email_bienvenida = function(cb) {
-  const token = new Token({_userId: this.id, token: crypto.randomBytes(16).toString()});
+usuarioSchema.methods.enviar_email_bienvenida = function(cb) {
+  const token = new Token({_userId: this.id, token: crypto.randomBytes(16).toString('hex')});
   const email_destination = this.email;
   token.save(function(err) {
     if (err) {return console.log(err.message);}
-
     const mailOptions = {
       from: 'no-reply@red-bicicletas.com',
       to: email_destination,
       subject: 'Verificación de cuenta',
-      text: 'Hola,\n\n' + 'Por favor, para verificar su cuenta haga click en este link: \n' + 'http://localhost:5000' + '\/token/confirmation\/' + token.token + '.\n'
+      text: 'Hola,\n\n' + 'Por favor, para verificar su cuenta haga click en este link: \n' + 'http://localhost:5000' + '\/token/confirmation\/' + token.token
     };
 
     mailer.sendMail(mailOptions, function(err) {
