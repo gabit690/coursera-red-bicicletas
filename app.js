@@ -6,6 +6,7 @@ var logger = require('morgan');
 
 const passport = require('./config/passport');
 const session = require('express-session');
+const jwt = require('jsonwebtoken');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -16,12 +17,16 @@ var usuariosAPIRouter = require('./routes/api/usuarios');
 var usuarioRouter = require('./routes/usuarios');
 var tokenRouter = require('./routes/token');
 
+var authAPIRouter = require('./routes/api/auth');
+
 const Usuario = require('./models/usuario');
 const Token = require('./models/token');
 
 const store = new session.MemoryStore;
 
 var app = express();
+
+app.set('secretKey', 'jwt_pwd_!!223344');
 
 app.use(session({
   cookie: { maxAge: 240 * 60 * 60 * 1000 },
@@ -124,6 +129,8 @@ app.post('/resetPassword', function(req, res) {
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+
+app.use('/api/auth', authAPIRouter);
 app.use('/bicicletas', loggedIn, bicicletasRouter);
 app.use('/api/bicicletas', bicicletasAPIRouter);
 app.use('/api/usuarios', usuariosAPIRouter);
@@ -156,5 +163,17 @@ function loggedIn(req, res, next) {
     res.redirect('/login');
   }
 };
+
+function validarUsuario(req, res, next) {
+  jwt.verify(req.headers['x-access-token'], req.app.get('secretKey'), function(err, decoded) {
+    if (err) {
+      res.json({status: 'error', message: err.message, data: null});
+    } else {
+      req.body.userId = decoded.id;
+      console.log('JWT verify: ' + decoded);
+      next();
+    }
+  });
+}
 
 module.exports = app;
