@@ -74,7 +74,7 @@ usuarioSchema.methods.enviar_email_bienvenida = function(cb) {
       from: 'no-reply@red-bicicletas.com',
       to: email_destination,
       subject: 'Verificación de cuenta',
-      text: 'Hola,\n\n' + 'Por favor, para verificar su cuenta haga click en este link: \n' + 'http://localhost:5000' + '\/token/confirmation\/' + token.token
+      text: 'Hola,\n\n' + 'Por favor, para verificar su cuenta haga click en este link: \n\n' + 'http://localhost:5000' + '\/token/confirmation\/' + token.token +'\n\n'
     };
 
     mailer.sendMail(mailOptions, function(err) {
@@ -82,6 +82,29 @@ usuarioSchema.methods.enviar_email_bienvenida = function(cb) {
 
       console.log('Se ha enviado un email de bienvenida a: ' + email_destination + '.');
     });
+
+  });
+};
+
+usuarioSchema.methods.resetPassword = function(cb) {
+  const token = new Token({_userId: this.id, token: crypto.randomBytes(16).toString('hex')});
+  const email_destination = this.email;
+  token.save(function(err) {
+    if (err) {return cb(err);}
+    const mailOptions = {
+      from: 'no-reply@red-bicicletas.com',
+      to: email_destination,
+      subject: 'Reseteo de PASSWORD de cuenta',
+      text: 'Hola,\n\n' + 'Por favor, para verificar su cuenta haga click en este link: \n' + 'http://localhost:5000' + '\/resetPassword\/' + token.token +'.\n'
+    };
+
+    mailer.sendMail(mailOptions, function(err) {
+      if (err) {return cb(err);}
+
+      console.log('Se ha enviado un email para resetear el password a: ' + email_destination + '.');
+    });
+
+    cb(null);
 
   });
 };

@@ -4,6 +4,9 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+const passport = require('./config/passport');
+const session = require('express-session');
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var bicicletasRouter = require('./routes/bicicletas');
@@ -13,7 +16,20 @@ var usuariosAPIRouter = require('./routes/api/usuarios');
 var usuarioRouter = require('./routes/usuarios');
 var tokenRouter = require('./routes/token');
 
+const Usuario = require('./models/usuario');
+const Token = require('./models/token');
+
+const store = new session.MemoryStore;
+
 var app = express();
+
+app.use(session({
+  cookie: { maxAge: 240 * 60 * 60 * 1000 },
+  store: store,
+  saveUninitialized: true,
+  resave: 'true',
+  secret: 'cualquierCosa'
+}));
 
 var mongoose = require('mongoose');
 
@@ -33,7 +49,48 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('/login', function(req, res) {
+  res.render('session/login');
+});
+
+app.post('/login', function(req, res, next) {
+  //passport
+});
+
+app.get('/logout', function(req, res) {
+  res.redirect('/');
+});
+
+app.get('/forgotPassword', function(req, res) {
+  res.render('session/forgotPassword');
+});
+
+app.post('/forgotPsssword', function(req, res) {
+  Usuario.findOne({ email: req.body.email }, function(err, usuario) {
+    if (!usuario) return res.render('session/forgotPassword', {info: {message: 'No existe el email para un usuario existente.'}});
+
+    usuario.resetPassword(function(err) {
+      if (err) return next(err);
+      console.log('session/forgotPasswordMessage');
+    });
+
+    res.render('session/forgotPasswordMessage');
+  });
+});
+
+app.get('/reserPassword/:token', function(req, res, next) {
+// CODIGO EN LA SEMANA 3
+});
+
+app.post('/resetPassword', function(req, res) {
+  // CODIGO EN LA SEMANA 3
+});
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
