@@ -7,3 +7,8 @@ a {
   width: 800px;
   margin: auto;
 }
+
+body {
+  padding: 50px;
+  padding-top: 5rem;
+}
