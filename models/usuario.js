@@ -9,7 +9,6 @@ const saltRounds = 10;
 
 const Token = require('../models/token');
 const mailer = require('../mailer/mailer');
-const { use } = require('../mailer/mailer');
 
 const validateEmail = function(email) {
   const re = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
@@ -70,6 +69,7 @@ usuarioSchema.methods.enviar_email_bienvenida = function(cb) {
   const email_destination = this.email;
   token.save(function(err) {
     if (err) {return console.log(err.message);}
+    
     const mailOptions = {
       from: 'no-reply@red-bicicletas.com',
       to: email_destination,
