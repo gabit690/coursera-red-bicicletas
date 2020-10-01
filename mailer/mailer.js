@@ -1,5 +1,5 @@
 const nodemailer = require('nodemailer');
-const sgTransport = require('nodemailer-sengrid-transport');
+const sgTransport = require('nodemailer-sendgrid-transport');
 
 let mailConfig;
 if (process.env.NODE_ENV === 'production') {
