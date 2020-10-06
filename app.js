@@ -8,6 +8,7 @@ var logger = require('morgan');
 
 const passport = require('./config/passport');
 const session = require('express-session');
+const MongoDBStore = require('connect-mongodb-session')(session);
 const jwt = require('jsonwebtoken');
 
 var indexRouter = require('./routes/index');
@@ -24,7 +25,22 @@ var authAPIRouter = require('./routes/api/auth');
 const Usuario = require('./models/usuario');
 const Token = require('./models/token');
 
-const store = new session.MemoryStore;
+const { assert } = require('console');
+
+let store;
+
+if (process.env.NODE_ENV === 'development') {
+  store = new session.MemoryStore;
+} else {
+  store = new MongoDBStore({
+    uri: process.env.MONGO_URI,
+    collection: 'sessions'
+  });
+  store.on('error', function(error) {
+    assert.ifError(error);
+    assert.ok(false);
+  });
+}
 
 var app = express();
 
@@ -148,6 +164,21 @@ app.use('/privacy_policy', function(req, res) {
 app.use('/google2965b6c9d92fa8d0', function(req, res) {
   res.sendFile('public/google2965b6c9d92fa8d0.html');
 });
+
+app.get('/auth/google', passport.authenticate('google', { 
+  scope: ['https://www.googleapis.com/auth/plus.login',
+  'https://www.googleapis.com/auth/plus.profile.emails.read'] 
+}));
+
+app.get('/auth/google/callback', passport.authenticate('google', { 
+  successRedirect: '/', 
+  failureRedirect: '/error' 
+}));
+
+// app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/error' }), function(req, res) {
+//     // Successful authentication, redirect home.
+//     res.redirect('/');
+// });
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
